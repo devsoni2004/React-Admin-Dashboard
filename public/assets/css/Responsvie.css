@@ -1,0 +1,7 @@
+@media (max-width: 480px) {
+    .addmerchants {
+        height: 52%;
+        border-radius: 7px;
+        padding: 13px;
+    }
+}
