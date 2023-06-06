@@ -4,13 +4,18 @@ import Sidebar from './Sidebar'
 import { useState, useEffect } from 'react'
 import { useDownloadExcel } from 'react-export-table-to-excel'
 import { useRef } from 'react'
-import { utils, read } from 'xlsx'
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import DownloadIcon from '@mui/icons-material/Download';
+import AddIcon from '@mui/icons-material/Add';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap'
 import { addmerchantsdetail } from './Service/Api';
 
 const Merchantsdata = () => {
+
     const [ExcelData, setExcelData] = useState([]);
     const [merchants, setmerchants] = useState([]);
+    const [currentMerchant, setCurrentMerchant] = useState(null);
     const [modal, setmodal] = useState(false);
     const [view, setview] = useState(false);
     useEffect(() => {
@@ -18,7 +23,7 @@ const Merchantsdata = () => {
         axios.get('https://exuberant-fatigues-jay.cyclic.app/SinghTek/merchants', {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDc1Y2ZmMDAzOWM1NDMzMjhhMmQyZWIiLCJpYXQiOjE2ODU1MTIwOTJ9.y6qGj1pIybV8rLXBDSsR7P_kU6WxT4nuXK9Zw0Ae9MI'
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDc1Y2ZmMDAzOWM1NDMzMjhhMmQyZWIiLCJpYXQiOjE2ODYwMzUwNjd9.Qy2kZX2qHXSA5_-H4SVgsKxWqgji1Eyw6CtTjEvR-0Y'
             },
         })
             .then(function (response) {
@@ -38,33 +43,11 @@ const Merchantsdata = () => {
         sheet: "All Merchant Data.xls",
     });
 
-    //--------------------------Import Excel Sheet Data -------------------------------f
-    // const file_type = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']
-    // const handlechange = (e) => {
-    //     const selected_file = e.target.files[0];
-    //     if (selected_file) {
-    //         if (selected_file && file_type.includes(selected_file.type)) {
-    //             let reader = new FileReader();
-    //             reader.onload = (e) => {
-    //                 const workbook = read(e.target.result);
-    //                 const sheet = workbook.SheetNames;
-    //                 if (
-    //                     sheet.length
-    //                 ) {
-    //                     const data = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
-    //                     console.log(data)
-    //                     setmerchants(merchants => merchants.concat(data))
+    const viewAll = (item) => {
+        setCurrentMerchant(item);
+        setview(true);
+    }
 
-    //                 }
-    //             }
-    //             reader.readAsArrayBuffer(selected_file)
-    //         } else {
-
-    //             setExcelData([])
-    //         }
-    //     }
-    // }
- 
     const [merchant_name, setmerchant_name] = useState("");
     const [business_name, setbusiness_name] = useState("");
     const [business_type, setbusiness_type] = useState("");
@@ -83,6 +66,8 @@ const Merchantsdata = () => {
     const [company_pan_card, setcompany_pan_card] = useState("");
     const [company_gst, setcompany_gst] = useState("");
     const [bank_statement, setbank_statement] = useState("");
+    const [email, setemail] = useState("");
+    const [mobile, setmobile] = useState("");
     const handleChange = (e) => {
         switch (e.target.name) {
             case "merchant_name":
@@ -139,6 +124,12 @@ const Merchantsdata = () => {
             case "bank_statement":
                 setbank_statement(e.target.files[0]);
                 break;
+            case "email":
+                setemail(e.target.files[0]);
+                break;
+            case "mobile":
+                setmobile(e.target.files[0]);
+                break;
             default: ;
 
         }
@@ -166,13 +157,13 @@ const Merchantsdata = () => {
             company_pan_card,
             company_gst,
             bank_statement,
-            address
+            address,
+            email,
+            mobile
         }
         console.log(userData)
-
         const result = await addmerchantsdetail(userData);
         console.log(result)
-
     };
     return (
         <div>
@@ -209,6 +200,32 @@ const Merchantsdata = () => {
                                     name="business_name"
                                     required
                                     placeholder="Enter Business Name"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-sm-6">
+                                <label className="form-label">
+                                    Email Id
+                                </label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    name="Email"
+                                    placeholder="Enter Email Id"
+                                    required
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-sm-6">
+                                <label className="form-label">
+                                    Mobile No.
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="mobile"
+                                    placeholder="Enter Mobile No."
+                                    required
                                     onChange={handleChange}
                                 />
                             </div>
@@ -453,6 +470,7 @@ const Merchantsdata = () => {
                                     onChange={handleChange}
                                 />
                             </div>
+
                             <ModalHeader>
                                 Busness Address
                             </ModalHeader>
@@ -629,7 +647,7 @@ const Merchantsdata = () => {
                 </ModalBody>
             </Modal>
 
-            <Modal size='lg' isOpen={view} toggle={() => setview(!view)}>
+            <Modal size='lg' isOpen={view} toggle={() => setview(!view)} className="model-outer">
                 <ModalHeader toggle={() => setview(!view)} className="text-center">
                     Show Merchants Details
                 </ModalHeader>
@@ -638,57 +656,77 @@ const Merchantsdata = () => {
                         <thead>
                             <tr>
                                 <th scope="col">Merchant Name</th>
-                                <th scope="col">Username</th>
+                                <th scope="col">Busness Name</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Mobile</th>
-                                <th scope="col">Password</th>
                                 <th scope="col">Texn. Limit</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Busness Type</th>
+                                <th scope="col">Busness Catagory</th>
+                                <th scope="col">Busness Sub Catagory</th>
+                                <th scope="col">Company Expenditure</th>
+                                <th scope="col">Website</th>
+                                <th scope="col">Bank Name</th>
+                                <th scope="col">Bank Account Number</th>
+                                <th scope="col">Ifsc Code</th>
+                                <th scope="col">Gst No.</th>
+                                <th scope="col">Pin Code</th>
+                                <th scope="col">Pan No.</th>
+                                <th scope="col">Adhar No.</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {
-                                merchants.map(item => (
-                                    <tr>
-                                        <td>{item.business_detail.merchant_name}</td>
-                                        <td>{item.user_name}</td>
-                                        <td>{item.email}</td>
-                                        <td>{item.mobile}</td>
-                                        <td>{item.beneficiary_code}</td>
-                                        <td>{item.amount}</td>
-                                    </tr>
-                                )
-                                )
-                            }
+                            <tr >
+                                <td>{currentMerchant?.business_detail.merchant_name}</td>
+                                <td>{currentMerchant?.user_name}</td>
+                                <td>{currentMerchant?.email}</td>
+                                <td>{currentMerchant?.mobile}</td>
+                                <td>{currentMerchant?.transaction_limit}</td>
+                                <td>{currentMerchant?.business_detail.business_type}</td>
+                                <td>{currentMerchant?.amount}</td>
+                                <td>{currentMerchant?.business_detail.business_sub_category}</td>
+                                <td>{currentMerchant?.business_detail.company_expenditure}</td>
+                                <td>{currentMerchant?.business_detail.website}</td>
+                                <td>{currentMerchant?.business_detail.bank_name}</td>
+                                <td>{currentMerchant?.business_detail.bank_account_number}</td>
+                                <td>{currentMerchant?.business_detail.bank_ifsc_code}</td>
+                                <td>{currentMerchant?.business_detail.gst}</td>
+                                <td>{currentMerchant?.business_detail.pan_number}</td>
+                                <td>{currentMerchant?.business_detail.aadhar_number}</td>
+                                <td>{currentMerchant?.business_address.state}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </ModalBody>
             </Modal>
             <div className="card  table-outer">
                 <div className="card-body">
-                    <div className="button-outers d-flex align-item-center">
-                        <button className="btn btn-light buttons-excel buttons-html5 export" onClick={onDownload} tabindex="0" aria-controls="example2" type="button"><span>Export Data Excel</span></button>
-                        <div className="d-grid add-btn">
-                            <button className="addmerchants  btn-light" onClick={() => setmodal(true)}>+ Add Merchants</button>
+                    <div className="buttons-outer d-flex align-item-center">
+                        <div className="button-outers">
+                            <Stack direction="row" spacing={2}>
+                                <Button variant="contained" endIcon={<DownloadIcon />} onClick={onDownload}>
+                                    Export Data Excel
+                                </Button>
+                            </Stack>
                         </div>
-
-
+                        <div className="addmer">
+                            <Stack direction="row" spacing={2}>
+                                <Button variant="contained" endIcon={<AddIcon />} onClick={() => setmodal(true)}>
+                                    Add Merchants Details
+                                </Button>
+                            </Stack>
+                        </div>
                     </div>
-
-                    <br />
                     <div className="table-responsive">
                         <table id="example2" className="table table-striped table-bordered" ref={tableRef}>
                             <thead>
                                 <tr>
-                                    <th>SinghTek Id</th>
-                                    {/* <th>id</th> */}
-                                    <th>User Name</th>
-                                    <th>Email</th>
+                                    <th>Merchant Id</th>
                                     <th>Merchant Name</th>
+                                    <th>Email</th>
                                     <th>Mobile No</th>
-                                    <th>Business Category</th>
-                                    <th>Website</th>
+                                    <th>Status</th>
                                     <th>View Profile</th>
-
                                 </tr>
                             </thead>
                             <tbody>
@@ -698,21 +736,23 @@ const Merchantsdata = () => {
                                             <td>  {item.singhtek_id} </td>
                                             <td>  {item.user_name}</td>
                                             <td>  {item.email} </td>
-                                            <td>  {item.business_detail.merchant_name} </td>
                                             <td>  {item.mobile}</td>
-                                            <td>  {item.business_detail.business_category} </td>
-                                            <td>  {item.business_detail.website} </td>
+                                            <td>
+                                                <Stack direction="row">
+                                                    <Button variant="contained" color="warning">
+                                                        {item.status}
+                                                    </Button>
+                                                </Stack>
+                                            </td>
                                             <td>
                                                 <div className="d-grid view-btn">
-                                                    <button className="btn btn-light" onClick={() => setview(true)}>View All</button>
+                                                    <button className="btn btn-light" onClick={() => viewAll(item)} >View All</button>
                                                 </div>
                                             </td>
                                         </tr>
                                     )
                                     )
                                 }
-
-
                             </tbody>
                         </table>
                     </div>

@@ -20,7 +20,7 @@ export const addmerchantsdetail = async (data) => {
     data,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDc1Y2ZmMDAzOWM1NDMzMjhhMmQyZWIiLCJpYXQiOjE2ODU1MTIwOTJ9.y6qGj1pIybV8rLXBDSsR7P_kU6WxT4nuXK9Zw0Ae9MI'
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDc1Y2ZmMDAzOWM1NDMzMjhhMmQyZWIiLCJpYXQiOjE2ODYwMzg3Mjh9.8PGTeJ4c7AB5l2SK7dRs3hPUqBv0ylm3d7hO4Lbm8zY'
     }
   });
 
